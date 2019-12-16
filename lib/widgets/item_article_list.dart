@@ -9,6 +9,7 @@ import 'package:flutter_wanandroid/utils/index.dart';
 import 'package:flutter_wanandroid/widgets/custom_cached_image.dart';
 import 'package:flutter_wanandroid/widgets/like_button_widget.dart';
 
+/// 首页文章的item
 class ItemArticleList extends StatefulWidget {
   ArticleBean item;
 
@@ -24,23 +25,23 @@ class ItemArticleListState extends State<ItemArticleList> {
   @override
   Widget build(BuildContext context) {
     var item = widget.item;
-    return InkWell(
-      onTap: () {
+    return InkWell( // InkWell管理点击回调和水波动画。
+      onTap: () { // 点击事件，跳到WebView
         RouteUtil.toWebView(context, item.title, item.link);
       },
-      child: Column(
+      child: Column( //  Column 是一个可以沿垂直方向展示它的子组件的组件。
         children: <Widget>[
           Container(
             padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
-            child: Row(
+            child: Row( //  Column 是一个可以沿水平方向展示它的子组件的组件。
               children: <Widget>[
                 Offstage(
                   offstage: item.top == 0,
-                  child: Container(
-                    decoration: new BoxDecoration(
+                  child: Container( /// 置顶
+                    decoration: new BoxDecoration( // 背景
                       border:
-                          new Border.all(color: Color(0xFFF44336), width: 0.5),
-                      borderRadius: new BorderRadius.vertical(
+                          new Border.all(color: Color(0xFFF44336), width: 0.5), // 边框
+                      borderRadius: new BorderRadius.vertical(  ///创建垂直对称的边框半径，其中顶部和底部矩形的边具有相同的半径。
                           top: Radius.elliptical(2, 2),
                           bottom: Radius.elliptical(2, 2)),
                     ),
@@ -55,7 +56,7 @@ class ItemArticleListState extends State<ItemArticleList> {
                   ),
                 ),
                 Offstage(
-                  offstage: !item.fresh,
+                  offstage: !item.fresh, // 是否新文章
                   child: Container(
                     decoration: new BoxDecoration(
                       border:
@@ -74,7 +75,7 @@ class ItemArticleListState extends State<ItemArticleList> {
                     ),
                   ),
                 ),
-                Offstage(
+                Offstage( // 标记
                   offstage: item.tags.length == 0,
                   child: Container(
                     decoration: new BoxDecoration(
@@ -92,13 +93,13 @@ class ItemArticleListState extends State<ItemArticleList> {
                     ),
                   ),
                 ),
-                Text(
+                Text( // 作者或者分享用户
                   item.author.isNotEmpty ? item.author : item.shareUser,
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   textAlign: TextAlign.left,
                 ),
                 Expanded(
-                  child: Text(
+                  child: Text( // 日期
                     item.niceDate,
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     textAlign: TextAlign.right,
@@ -110,7 +111,7 @@ class ItemArticleListState extends State<ItemArticleList> {
           Container(
             child: Row(
               children: <Widget>[
-                Offstage(
+                Offstage( // 显示封面图
                   offstage: item.envelopePic == "",
                   child: Container(
                       width: 100,
@@ -123,7 +124,7 @@ class ItemArticleListState extends State<ItemArticleList> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Container(
+                      Container( // 标题
                         alignment: Alignment.topLeft,
                         padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
                         child: Text(
@@ -139,7 +140,7 @@ class ItemArticleListState extends State<ItemArticleList> {
                         child: Row(
                           children: <Widget>[
                             Expanded(
-                              child: Text(
+                              child: Text( // 大约是分类吧
                                 item.superChapterName +
                                     " / " +
                                     item.chapterName,
@@ -148,10 +149,10 @@ class ItemArticleListState extends State<ItemArticleList> {
                                 textAlign: TextAlign.left,
                               ),
                             ),
-                            LikeButtonWidget(
+                            LikeButtonWidget( /// 点赞组件
                               isLike: item.collect,
                               onClick: () {
-                                addOrCancelCollect(item);
+                                addOrCancelCollect(item); // 添加收藏或者取消收藏
                               },
                             )
                           ],
@@ -163,7 +164,7 @@ class ItemArticleListState extends State<ItemArticleList> {
               ],
             ),
           ),
-          Divider(height: 1)
+          Divider(height: 1) // 分割线
         ],
       ),
     );
@@ -175,7 +176,7 @@ class ItemArticleListState extends State<ItemArticleList> {
     if (cookies == null || cookies.length == 0) {
       T.show(msg: '请先登录~');
     } else {
-      if (item.collect) {
+      if (item.collect) { //  取消收藏
         apiService.cancelCollection((BaseModel model) {
           if (model.errorCode == Constants.STATUS_SUCCESS) {
             T.show(msg: '已取消收藏~');
@@ -188,10 +189,10 @@ class ItemArticleListState extends State<ItemArticleList> {
         }, (DioError error) {
           print(error.response);
         }, item.id);
-      } else {
+      } else { // 取消收藏
         apiService.addCollection((BaseModel model) {
           if (model.errorCode == Constants.STATUS_SUCCESS) {
-            T.show(msg: '收藏成功~');
+            T.show(msg: '取消收藏~');
             setState(() {
               item.collect = true;
             });

@@ -28,30 +28,33 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
   /// 首页文章列表数据
   List<ArticleBean> _articles = new List();
 
-  /// listview 控制器
+  /// listView 滑动控制器
   ScrollController _scrollController = new ScrollController();
 
-  /// 是否显示悬浮按钮
+  /// 是否显示悬浮按钮  false 不显示 true 显示
   bool _isShowFAB = false;
 
   /// 页码，从0开始
   int _page = 0;
 
+  /// 下拉刷新 控制器
   RefreshController _refreshController =
       new RefreshController(initialRefresh: false);
 
+  /// 插入到渲染树时调用，只执行一次。
   @override
   void initState() {
     super.initState();
     setAppBarVisible(false);
   }
 
+  /// 1、在初始化initState后执行； 2、显示/关闭其它widget。 3、可执行多次；
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _bannerList.add(null);
 
-    showLoading().then((value) {
+    showLoading().then((value) { // then 估计是链式调用
       getBannerList();
       getTopArticleList();
     });
@@ -62,7 +65,7 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
           _scrollController.position.maxScrollExtent) {
         // getMoreArticleList();
       }
-      if (_scrollController.offset < 200 && _isShowFAB) {
+      if (_scrollController.offset < 200 && _isShowFAB) { // offset 偏移量
         setState(() {
           _isShowFAB = false;
         });
@@ -85,8 +88,9 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
     });
   }
 
-  /// 获取置顶文章数据
+  /// 获取置顶文章数据 获取成功后，获取文章列表数据
   Future getTopArticleList() async {
+    // 传参是两个函数
     apiService.getTopArticleList((TopArticleModel topArticleModel) {
       if (topArticleModel.errorCode == Constants.STATUS_SUCCESS) {
         topArticleModel.data.forEach((v) {
@@ -113,7 +117,7 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
               _articles.addAll(model.data.datas);
             });
           });
-        } else {
+        } else { // 空数据
           showEmpty();
         }
       } else {
@@ -125,7 +129,7 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
     }, _page);
   }
 
-  /// 获取更多文章列表数据
+  /// 获取更多文章列表数据 就是加载更多
   Future getMoreArticleList() async {
     _page++;
     apiService.getArticleList((ArticleModel model) {
@@ -152,17 +156,18 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
     return AppBar(title: Text(""));
   }
 
+  /// 暴露内容视图
   @override
   Widget attachContentWidget(BuildContext context) {
     return Scaffold(
       body: SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
-        header: MaterialClassicHeader(),
-        footer: RefreshFooter(),
+        header: MaterialClassicHeader(), // 系统的下拉头
+        footer: RefreshFooter(), //  自定义 FooterView
         controller: _refreshController,
-        onRefresh: getTopArticleList,
-        onLoading: getMoreArticleList,
+        onRefresh: getTopArticleList, // 下拉刷新
+        onLoading: getMoreArticleList, // 加载更多
         child: ListView.builder(
           itemBuilder: itemView,
           physics: new AlwaysScrollableScrollPhysics(),
@@ -194,48 +199,49 @@ class HomeScreenState extends BaseWidgetState<HomeScreen> {
 
   /// ListView 中每一行的视图
   Widget itemView(BuildContext context, int index) {
-    if (index == 0) {
+    if (index == 0) { // 第一个index是轮播图
       return Container(
         height: 200,
         color: Colors.transparent,
         child: _buildBannerWidget(),
       );
+    } else {
+      ArticleBean item = _articles[index - 1];
+      return ItemArticleList(item: item); // 首页文章的item
     }
-    ArticleBean item = _articles[index - 1];
-    return ItemArticleList(item: item);
   }
 
   /// 构建轮播视图
   Widget _buildBannerWidget() {
-    return Offstage(
-      offstage: _bannerList.length == 0,
-      child: Swiper(
+    return Offstage( //  当offstage为true，控件隐藏； 当offstage为false，显示；注意,当offstage不可见,如果child有动画,应该手动停止动画,offstage不会停止动画;
+      offstage: _bannerList.length == 0, // 等于0不显示轮播图，
+      child: Swiper( // 第三方轮播图  https://github.com/best-flutter/flutter_swiper
         itemBuilder: (BuildContext context, int index) {
-          if (index >= _bannerList.length ||
-              _bannerList[index] == null ||
+          if (index >= _bannerList.length || _bannerList[index] == null ||
               _bannerList[index].imagePath == null) {
             return new Container(height: 0);
           } else {
-            return InkWell(
+            return InkWell( // InkWell管理点击回调和水波动画。
               child: new Container(
                 child:
-                    CustomCachedImage(imageUrl: _bannerList[index].imagePath),
+                    CustomCachedImage(imageUrl: _bannerList[index].imagePath), /// 自定义带有缓存的Image
               ),
-              onTap: () {
-                RouteUtil.toWebView(
+              onTap: () { // 点击事件
+                RouteUtil.toWebView( // 打开WebView
                     context, _bannerList[index].title, _bannerList[index].url);
               },
             );
           }
         },
         itemCount: _bannerList.length,
-        autoplay: true,
-        pagination: new SwiperPagination(),
+        autoplay: true, // 自动播放开关
+        pagination: new SwiperPagination(), // 设置 new SwiperPagination() 展示默认分页指示器
         // control: new SwiperControl(),
       ),
     );
   }
 
+  //  表示组件已销毁；
   @override
   void dispose() {
     _refreshController.dispose();

@@ -90,6 +90,7 @@ class KnowledgeTreeState extends BaseWidgetState<KnowledgeTreeScreen> {
     return AppBar(title: Text(""));
   }
 
+  /// item
   Widget itemView(BuildContext context, int index) {
     KnowledgeTreeBean item = _list[index];
     return InkWell(
@@ -124,7 +125,7 @@ class KnowledgeTreeState extends BaseWidgetState<KnowledgeTreeScreen> {
                   ),
                 ),
               ),
-              Icon(
+              Icon( // 向右剪头
                 Icons.chevron_right,
                 color: Colors.grey,
               )

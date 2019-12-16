@@ -20,6 +20,7 @@ class WeChatScreen extends BaseWidget {
 
 class WeChatScreenState extends BaseWidgetState<WeChatScreen>
     with TickerProviderStateMixin {
+  /// tabs
   List<WXChaptersBean> _chaptersList = new List();
 
   TabController _tabController;

@@ -24,6 +24,7 @@ class ArticleModel {
   }
 }
 
+/// 置顶文章数据Model
 class TopArticleModel {
   List<ArticleBean> data;
   int errorCode;

@@ -24,7 +24,7 @@ class NavigationScreenState extends BaseWidgetState<NavigationScreen> {
   /// listview 控制器
   ScrollController _scrollController = new ScrollController();
 
-  /// 是否显示悬浮按钮
+  /// 是否显示悬浮按钮 true 显示  false 不显示
   bool _isShowFAB = false;
 
   RefreshController _refreshController =
@@ -133,10 +133,11 @@ class NavigationScreenState extends BaseWidgetState<NavigationScreen> {
     });
   }
 
+  /// item
   Widget itemView(BuildContext context, int index) {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Column(
+      child: Column( // Column 是一个可以沿垂直方向展示它的子组件的组件。
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
@@ -163,7 +164,7 @@ class NavigationScreenState extends BaseWidgetState<NavigationScreen> {
     Widget content;
     for (var item in children) {
       tiles.add(
-        new InkWell(
+        new InkWell( /// InkWell管理点击回调和水波动画。
           onTap: () {
             RouteUtil.toWebView(context, item.title, item.link);
           },

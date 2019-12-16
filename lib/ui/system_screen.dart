@@ -13,13 +13,16 @@ class SystemScreen extends BaseWidget {
 
 class SystemScreenState extends BaseWidgetState<SystemScreen>
     with TickerProviderStateMixin {
+  /// tabs
   var _list = ["体系", "导航"];
 
+  /// tabs 控制器
   TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    /// 设置导航栏显示或者隐藏 false 隐藏 true 显示
     setAppBarVisible(false);
   }
 
@@ -45,12 +48,12 @@ class SystemScreenState extends BaseWidgetState<SystemScreen>
             color: Theme.of(context).primaryColor,
             height: 50,
             child: TabBar(
-              indicatorColor: Colors.white,
-              labelStyle: TextStyle(fontSize: 16),
-              unselectedLabelStyle: TextStyle(fontSize: 16),
-              controller: _tabController,
-              isScrollable: false,
-              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorColor: Colors.white, // 指示器颜色
+              labelStyle: TextStyle(fontSize: 16), // 选中label的Style
+              unselectedLabelStyle: TextStyle(fontSize: 16), // 未选中label的Style
+              controller: _tabController, // TabController对象
+              isScrollable: false, // 如果多个按钮的话可以滑动 false 不能滚动
+              indicatorSize: TabBarIndicatorSize.tab, // // 指示器大小计算方式，TabBarIndicatorSize.label 跟文字等宽,TabBarIndicatorSize.tab 跟每个 tab 等宽
               tabs: _list.map((item) {
                 return Tab(text: item);
               }).toList(),
@@ -59,7 +62,8 @@ class SystemScreenState extends BaseWidgetState<SystemScreen>
           Expanded(
             child: TabBarView(
                 controller: _tabController,
-                children: [KnowledgeTreeScreen(), NavigationScreen()]),
+                // 知识体系页面  导航页面  tabs
+                children: [KnowledgeTreeScreen(), NavigationScreen()]),   //
           )
         ],
       ),

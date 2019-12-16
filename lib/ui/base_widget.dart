@@ -2,7 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// 封装一个通用的Widget
+/// 这个 widget 作用这个应用的顶层 widget.
+/// 这个 widget 是无状态的，所以我们继承的是 [StatelessWidget].
+/// 对应的，有状态的 widget 可以继承 [StatefulWidget]
 abstract class BaseWidget extends StatefulWidget {
+
   BaseWidgetState baseWidgetState;
 
   @override
@@ -15,21 +19,29 @@ abstract class BaseWidget extends StatefulWidget {
 }
 
 abstract class BaseWidgetState<T extends BaseWidget> extends State<T>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin { // AutomaticKeepAliveClientMixin 作用：切换tab后保留tab的状态，避免initState方法重复调用
   /// 导航栏是否显示
   bool _isAppBarShow = true;
 
-  /// 错误信息是否显示
+  /// 错误信息是否显示 true 显示  false 隐藏
   bool _isErrorWidgetShow = false;
+  /// 网络提示出错信息
   String _errorContentMsg = "网络请求失败，请检查您的网络";
+  /// 网络提示出错图片
   String _errorImgPath = "assets/images/ic_error.png";
 
+  /// 加载中信息是否显示 true 显示  false 隐藏
   bool _isLoadingWidgetShow = false;
 
+  /// 无数据信息是否显示 true 显示  false 隐藏
   bool _isEmptyWidgetShow = false;
+
+  /// 无数据提示
   String _emptyContentMsg = "暂无数据";
+  /// 无数据提示图片
   String _emptyImgPath = "assets/images/ic_empty.png";
 
+  /// 显示内容 true 显示  false 隐藏
   bool _isShowContent = false;
 
   /// 错误页面和空页面的字体粗度
@@ -46,14 +58,14 @@ abstract class BaseWidgetState<T extends BaseWidget> extends State<T>
       body: Container(
         child: Stack(
           children: <Widget>[
-            _attachBaseContentWidget(context),
-            _attachBaseErrorWidget(),
-            _attachBaseLoadingWidget(),
-            _attachBaseEmptyWidget()
+            _attachBaseContentWidget(context), // 内容页面
+            _attachBaseErrorWidget(), // 错误页面
+            _attachBaseLoadingWidget(), // 正在加载页面
+            _attachBaseEmptyWidget() // 数据为空的页面
           ],
         ),
       ),
-      floatingActionButton: fabWidget(),
+      floatingActionButton: fabWidget(), // 悬浮按钮
     );
   }
 
@@ -84,8 +96,8 @@ abstract class BaseWidgetState<T extends BaseWidget> extends State<T>
 
   /// 内容页面
   Widget _attachBaseContentWidget(BuildContext context) {
-    return Offstage(
-      offstage: !_isShowContent,
+    return Offstage( // 控制child是否显示
+      offstage: !_isShowContent, // 当offstage为true，控件隐藏； 当offstage为false，显示；注意,当offstage不可见,如果child有动画,应该手动停止动画,offstage不会停止动画;
       child: attachContentWidget(context),
     );
   }
@@ -151,7 +163,13 @@ abstract class BaseWidgetState<T extends BaseWidget> extends State<T>
   /// 暴露的正在加载页面方法，可以自己重写定制
   Widget attachLoadingWidget() {
     return Center(
-      child: CircularProgressIndicator(
+      /**
+       * strokeWidth:用于绘制圆的线条的宽度。
+          backgroundColor:背景颜色。
+          value:如果为非null，则该进度指示器的值为0.0，对应于没有进度，1.0对应于所有进度。
+          valueColor：动画的颜色值。
+       */
+      child: CircularProgressIndicator( // CircularProgressIndicator
         strokeWidth: 2.0,
       ),
     );
@@ -234,7 +252,7 @@ abstract class BaseWidgetState<T extends BaseWidget> extends State<T>
     }
   }
 
-  /// 设置导航栏显示或者隐藏
+  /// 设置导航栏显示或者隐藏 false 隐藏 true 显示
   Future setAppBarVisible(bool visible) async {
     setState(() {
       _isAppBarShow = visible;

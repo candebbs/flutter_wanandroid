@@ -19,7 +19,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin { // AutomaticKeepAliveClientMixin 作用：切换tab后保留tab的状态，避免initState方法重复调用
+
+  /// 控制台。用于监听视图的滚动情况。页面视图应该如何响应用户输入。例如，确定用户停止拖动页视图后，页视图如何继续动画。
   PageController _pageController = PageController();
 
   /// 当前选中的索引
@@ -43,14 +45,14 @@ class MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return WillPopScope(
+    return WillPopScope( // 双击返回与界面退出提示
       onWillPop: _onWillPop, // onWillPop 就表示当前页面将退出
       child: Scaffold(
         drawer: DrawerScreen(), // 侧滑页面
         appBar: AppBar(
           title: new Text(bottomBarTitles[_selectedIndex]), // 标题
           bottom: null,
-          elevation: 0,
+          elevation: 0,  // 阴影的范围，值越大阴影范围越大
           actions: <Widget>[ // 标题栏右上角+和搜索
             IconButton(
               icon: _selectedIndex == 1 ? Icon(Icons.add) : Icon(Icons.search),
@@ -67,7 +69,14 @@ class MainScreenState extends State<MainScreen>
         body: PageView.builder(
           itemBuilder: (context, index) => pages[index],
           itemCount: pages.length,
-          controller: _pageController,
+          controller: _pageController, // 滑动监听
+          /**
+           * 设置 ListView 如何响应用户的滑动行为，值为一个 ScrollPhysics 对象，它的实现类常用的有：
+                  AlwaysScrollableScrollPhysics：总是可以滑动。
+                  NeverScrollableScrollPhysics：禁止滚动。
+                  BouncingScrollPhysics：内容超过一屏，上拉有回弹效果。
+                  ClampingScrollPhysics：包裹内容，不会有回弹，感觉跟 AlwaysScrollableScrollPhysics 差不多。
+           */
           physics: NeverScrollableScrollPhysics(),
           onPageChanged: (index) {
             setState(() {
@@ -75,7 +84,7 @@ class MainScreenState extends State<MainScreen>
             });
           },
         ),
-        bottomNavigationBar: BottomNavigationBar(
+        bottomNavigationBar: BottomNavigationBar( // 显示在页面底部的导航栏。
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: buildImage(0, "ic_home"), //Icon(Icons.home),
@@ -98,7 +107,7 @@ class MainScreenState extends State<MainScreen>
               title: Text(bottomBarTitles[4]),
             ),
           ],
-          type: BottomNavigationBarType.fixed, // 设置显示模式
+          type: BottomNavigationBarType.fixed, // 设置显示模式  >=4个选项时需要强制设置为BottomNavigationBarType.fixed
           currentIndex: _selectedIndex, // 当前选中项的索引
           onTap: _onItemTapped, // 选择的处理事件 选中变化回调函数
         ),
@@ -107,7 +116,7 @@ class MainScreenState extends State<MainScreen>
   }
 
   void _onItemTapped(int index) {
-    _pageController.jumpToPage(index);
+    _pageController.jumpToPage(index); // //点击事件  在点击到指定的图标  改变currentindex
   }
 
   /// tabs 底总的图片
